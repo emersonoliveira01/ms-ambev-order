@@ -1,0 +1,51 @@
+# Nome da aplicação para identificação em logs e monitoramento
+spring:
+  application:
+    name: ms-ambev-order
+
+  # Configurações de conexão com o banco de dados MongoDB
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/orders?maxPoolSize=50
+
+  # Configurações do Kafka
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: order-service-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+    producer:
+      retries: 3
+
+# Configuração do tópico do Kafka
+topic:
+  name:
+    producer: order-topic
+
+# Configurações de gerenciamento e monitoramento do Spring Boot
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+# Configurações de circuitbreaker
+resilience4j.circuitbreaker:
+  instances:
+    orderService:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
+      permittedNumberOfCallsInHalfOpenState: 3
+
